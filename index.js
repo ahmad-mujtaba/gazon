@@ -4,11 +4,12 @@ const app = express();
 
 const PORT = 8000;
 
-const routes = require("./app/routes/routes");
+const router = require("./app/routes/routes");
 
+try {
+    app.use("/", router);
+    app.listen(PORT);
+} catch(e) {
+    console.error(e);
+}
 
-
-
-app.listen(PORT, () => {
-    routes(app);
-});
