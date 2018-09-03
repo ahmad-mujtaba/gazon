@@ -3,6 +3,8 @@ const express = require("express"),
   cheerio = require("cheerio"),
   config = require("../../config/config");
 
+const User = require("../../models/user.model");
+
 const router = express.Router();
 
 
@@ -17,13 +19,93 @@ let getErrorObj = (errMsg) => {
   };
 };
 
-router.get("/", function(req, res, next){
+router.use("/", function(req, res, next){
   console.log(req.method +" : "+req.url);
   next();
 
 });
 
+router.post("/login", (apiRequest, apiResponse) => {
+
+  let $user = apiRequest.body["user"];
+  let $pass = apiRequest.body["pass"];
+  console.log(User);
+  User.findOne({
+    name : $user
+  }, function(err, d){
+    console.log(err);
+    console.log("d == "+d);
+  });
+  
+  
+  apiResponse.set({
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': '*'
+  });
+
+
+
+  let cookieJar = request.jar();
+
+  let optionsStep1 = {
+    url: config.LOGIN_URL,
+    jar: cookieJar
+  };
+  request(optionsStep1, function(err, res, body) {
+
+
+    if (err) {
+      apiResponse.status(500).json(getErrorObj("Trouble logging you in: (1) " + err));
+      console.log(err);
+      return;
+    }
+
+    let $ = cheerio.load(body);
+
+    let loginFormData = {};
+    for (field in hiddenFields) {
+      loginFormData[hiddenFields[field]] = $("input[name=" + hiddenFields[field] + "]").val();
+    }
+
+
+
+    loginFormData["txtUserName"] = $user;
+    loginFormData["txtlogPassword"] = $pass;
+    loginFormData["btnSubmit"] = "Submit";
+
+    let optionsStep2 = {
+      method: 'POST',
+      url: config.LOGIN_URL,
+      form: loginFormData,
+      jar: cookieJar
+    };
+
+    request(optionsStep2, function(err, res, body) {
+      if (err) {
+        apiResponse.status(500).json(getErrorObj("Trouble logging you in: (2) " + err));
+        console.log(err);
+        return;
+      }
+
+      let $ = cheerio.load(body);
+      var loginFailMsg = $("#lblLoginmsg").text();
+
+      if (loginFailMsg.length > 0) {
+        apiResponse.status(403).json(getErrorObj("Incorrect Username or Password"));
+        return;
+      } else {
+        apiResponse.status(200).json({error:false,status:"OK"});
+        return;
+      }
+    });
+  });
+
+
+});
+
+
 router.get("/internet_usage", (apiRequest, apiResponse) => {
+
   
   apiResponse.set({
     'Access-Control-Allow-Origin': '*',
@@ -148,8 +230,6 @@ router.get("/internet_usage", (apiRequest, apiResponse) => {
 
 
   });
-
-
 
 
 });
