@@ -7,6 +7,10 @@ let UserSchema = new Schema({
     timestamp: {
       type: Date,
       default: Date.now
+    },
+    enableHistory: {
+      type: Boolean,
+      default:true,
     }
 }, {collection: 'user'});
 
