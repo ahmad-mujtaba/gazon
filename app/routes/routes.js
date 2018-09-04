@@ -29,12 +29,20 @@ router.post("/login", (apiRequest, apiResponse) => {
 
   let $user = apiRequest.body["user"];
   let $pass = apiRequest.body["pass"];
-  console.log(User);
-  User.findOne({
-    name : $user
-  }, function(err, d){
+  //console.log(User);
+  let user = new User({
+    user : $user,
+    pass: $pass
+  });
+
+  user.save(function(err, user){
     console.log(err);
-    console.log("d == "+d);
+
+    User.find({}).exec(function(err, user){
+      console.log(user);
+      console.error(err);
+      
+    });
   });
   
   

@@ -2,13 +2,13 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 let UserSchema = new Schema({
-    name : String,
+    user : String,
     pass : String,
     timestamp: {
-		type: Date,
-		default: Date.now
-	}
-});
+      type: Date,
+      default: Date.now
+    }
+}, {collection: 'user'});
 
-mongoose.model('User', UserSchema);
+module.exports = mongoose.model('user', UserSchema);
 

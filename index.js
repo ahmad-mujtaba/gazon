@@ -6,26 +6,18 @@ const express = require("express"),
 const app = express();
 
 const router = require("./app/routes/routes");
-// Bootstrap db connection
-mongoose.Promise = global.Promise;
-var db = mongoose.connect(config.db, {useMongoClient: true}, function(err){
-	if (err) {
-		console.log(('Could not connect to MongoDB!'));
-		console.log((err));
-	}
-	else {
-		console.log('Connected to:', config.db);
-	}
-});
 
-try {
-    
+mongoose.connect(config.db);
+let db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+    console.log("Connected to "+config.db);
     app.use( bodyParser.json() );       // to support JSON-encoded bodies
     app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
     extended: true
     })); 
     app.use("/", router);
     app.listen(config.PORT);
-} catch(e) {
-    console.error(e);
-}
+});
+
+    
