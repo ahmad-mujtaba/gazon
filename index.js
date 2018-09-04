@@ -11,6 +11,18 @@ const apiController= require("./app/controllers/api.controller");
 const utilRouter = require("./app/routes/util.routes");
 
 mongoose.connect(config.db, { useNewUrlParser: true });
+/*
+let task = cron.schedule('5 * * * *', function(){
+    console.log('starting cron task');
+    apiController.logUsage();
+}, true);
+task.start();*/
+
+setInterval(function(){
+    console.log('starting cron task');
+    apiController.logUsage();
+}, 1000 * 60 * 30);
+
 let db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {
@@ -26,11 +38,7 @@ db.once('open', function() {
     
     app.listen(config.PORT);
 
-    let task = cron.schedule('* * 1 * *', function(){
-        console.log('starting cron task');
-        apiController.logUsage();
-    }, true);
-    task.start();
+    
 });
 
     
