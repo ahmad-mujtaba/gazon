@@ -1,10 +1,13 @@
 const express = require("express"),
   api = require("../controllers/api.controller"),
-  router = express.Router();
+  config = require("../../config/config");
+router = express.Router();
 
 
-router.post("/login", api.login);
+router.post(config.baseUrl + "/login", api.login);
 
-router.get("/internet_usage", api.getUsage);
+router.get(config.baseUrl + "/get_usage", api.getUsage);
+
+router.post(config.baseUrl + "/get_history", api.getHistory);
 
 module.exports = router;

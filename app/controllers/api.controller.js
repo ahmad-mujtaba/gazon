@@ -268,7 +268,7 @@ exports.logUsage = () => {
                     set : function(){},
                 };
                 _getUsage(apiRequest, apiResponse, function(usageResult){
-                    let usageHistory = new UsageHistory({result:usageResult});
+                    let usageHistory = new UsageHistory({user:_u._id, result:usageResult});
                     usageHistory.save(function(err, data){
                         if(err) {
                             console.log("Error while saving history : "+err);
@@ -281,4 +281,54 @@ exports.logUsage = () => {
             }
         }
     });
-}
+};
+
+exports.getHistory = (apiRequest, apiResponse) => {
+
+    let $user = apiRequest.body["user"];
+    let $pass = apiRequest.body["pass"];
+    let lt = apiRequest.body["lt"];
+    let gt = apiRequest.body["gt"];
+    
+    
+    
+    apiResponse.set({
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Headers': '*'
+    });
+
+    User.findOne({
+        user : $user,
+        pass: $pass
+    }).exec(function(err, user){
+        if(err === null) {
+            if(user && user["user"] === $user) {
+                let historyCriteria =  {
+                    user : user._id,
+                    creationTime: {
+                        $gte : new Date(gt)
+                    }
+                }
+
+                if(lt != null) {
+                    historyCriteria.creationTime.$lt = new Date(lt);
+                }
+
+                UsageHistory.find(historyCriteria).exec(function(err, history){
+                    if(err === null) {
+                        apiResponse.status(200).json(history);
+                    } else {
+                        console.log("Error : "+err);
+                        apiResponse.status(500).json(getErrorObj("Error "+err));
+                    }
+                });
+            } else {
+                apiResponse.status(400).json(getErrorObj("Invalid user"));
+            }
+            
+        } else {
+            console.log("Error : "+err);
+            apiResponse.status(500).json(getErrorObj("Error "+err));
+        }
+    });
+};

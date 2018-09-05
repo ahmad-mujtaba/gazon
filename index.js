@@ -21,7 +21,7 @@ task.start();*/
 setInterval(function(){
     console.log('starting cron task');
     apiController.logUsage();
-}, 1000 * 60 * 30);
+}, 1000 * 60 * 20);
 
 let db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
