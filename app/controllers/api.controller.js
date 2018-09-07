@@ -14,6 +14,16 @@ let getErrorObj = (errMsg) => {
     };
 };
 
+exports.enableCors = (apiRequest, apiResponse, next) => {
+    apiResponse.set({
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Headers': '*',
+      'Access-Control-Allow-Methods': 'GET, PUT, POST, OPTIONS'
+    });
+
+    next();
+};
+
 exports.login = (apiRequest, apiResponse) => {
 
     let $user = apiRequest.body["user"];

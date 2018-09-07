@@ -4,6 +4,8 @@ const express = require("express"),
 router = express.Router();
 
 
+router.options(config.baseUrl+"/*", api.enableCors);
+
 router.post(config.baseUrl + "/login", api.login);
 
 router.get(config.baseUrl + "/get_usage", api.getUsage);
