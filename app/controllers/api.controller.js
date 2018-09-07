@@ -24,7 +24,7 @@ exports.enableCors = (apiRequest, apiResponse, next) => {
     next();
 };
 
-exports.login = (apiRequest, apiResponse) => {
+exports.login = (apiRequest, apiResponse, next) => {
 
     let $user = apiRequest.body["user"];
     let $pass = apiRequest.body["pass"];
@@ -113,7 +113,8 @@ exports.login = (apiRequest, apiResponse) => {
         }
       });
     });
-  
+
+    next();
   
   };
 
@@ -252,9 +253,9 @@ let _getUsage = function(apiRequest, apiResponse, onSuccess, onError) {
 };
 
 
-exports.getUsage = (apiRequest, apiResponse) => {
+exports.getUsage = (apiRequest, apiResponse, next) => {
     _getUsage(apiRequest, apiResponse, null, null);
-
+    next();
 };
 
 exports.logUsage = () => {
@@ -293,7 +294,7 @@ exports.logUsage = () => {
     });
 };
 
-exports.getHistory = (apiRequest, apiResponse) => {
+exports.getHistory = (apiRequest, apiResponse, next) => {
 
     let $user = apiRequest.body["user"];
     let $pass = apiRequest.body["pass"];
@@ -341,4 +342,6 @@ exports.getHistory = (apiRequest, apiResponse) => {
             apiResponse.status(500).json(getErrorObj("Error "+err));
         }
     });
+
+    next();
 };
