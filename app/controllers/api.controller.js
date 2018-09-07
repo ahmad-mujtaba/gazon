@@ -50,6 +50,7 @@ exports.login = (apiRequest, apiResponse, next) => {
       if (err) {
         apiResponse.status(500).json(getErrorObj("Trouble logging you in: (1) " + err));
         console.log(err);
+        next();
         return;
       }
   
@@ -77,6 +78,7 @@ exports.login = (apiRequest, apiResponse, next) => {
         if (err) {
           apiResponse.status(500).json(getErrorObj("Trouble logging you in: (2) " + err));
           console.log(err);
+          next();
           return;
         }
   
@@ -85,6 +87,7 @@ exports.login = (apiRequest, apiResponse, next) => {
   
         if (loginFailMsg.length > 0) {
           apiResponse.status(403).json(getErrorObj("Incorrect Username or Password"));
+          next();
           return;
         } else {
             User.find({}).exec(function(err, users){
@@ -109,12 +112,13 @@ exports.login = (apiRequest, apiResponse, next) => {
           
               });
           apiResponse.status(200).json({error:false,status:"OK"});
+          next();
           return;
         }
       });
     });
 
-    next();
+    
   
   };
 
@@ -253,9 +257,9 @@ let _getUsage = function(apiRequest, apiResponse, onSuccess, onError) {
 };
 
 
-exports.getUsage = (apiRequest, apiResponse, next) => {
+exports.getUsage = (apiRequest, apiResponse) => {
     _getUsage(apiRequest, apiResponse, null, null);
-    next();
+    
 };
 
 exports.logUsage = () => {
@@ -341,7 +345,6 @@ exports.getHistory = (apiRequest, apiResponse, next) => {
             console.log("Error : "+err);
             apiResponse.status(500).json(getErrorObj("Error "+err));
         }
+        next();
     });
-
-    next();
 };
