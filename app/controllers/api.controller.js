@@ -50,7 +50,7 @@ exports.login = (apiRequest, apiResponse, next) => {
       if (err) {
         apiResponse.status(500).json(getErrorObj("Trouble logging you in: (1) " + err));
         console.log(err);
-        next();
+        
         return;
       }
   
@@ -78,7 +78,7 @@ exports.login = (apiRequest, apiResponse, next) => {
         if (err) {
           apiResponse.status(500).json(getErrorObj("Trouble logging you in: (2) " + err));
           console.log(err);
-          next();
+          
           return;
         }
   
@@ -87,7 +87,7 @@ exports.login = (apiRequest, apiResponse, next) => {
   
         if (loginFailMsg.length > 0) {
           apiResponse.status(403).json(getErrorObj("Incorrect Username or Password"));
-          next();
+         next();
           return;
         } else {
             User.find({}).exec(function(err, users){
@@ -112,7 +112,7 @@ exports.login = (apiRequest, apiResponse, next) => {
           
               });
           apiResponse.status(200).json({error:false,status:"OK"});
-          next();
+         
           return;
         }
       });
@@ -238,14 +238,28 @@ let _getUsage = function(apiRequest, apiResponse, onSuccess, onError) {
             for (field in fieldsToExtract) {
               result[fieldsToExtract[field]] = $(field).text();
             }
+
+            let today = new Date(new Date().setHours(0,0,0,0));
+            UsageHistory.find({
+                creationTime : {
+                    $gte : today
+                }
+            }).exec((err, results) => {
+                if(err === null && results.length > 0) {
+                    let s = parseFloat(results[0].result['used']);
+                    result["usageToday"] = parseFloat(result["used"]) - s;
+                }
+
+                let endTime = (new Date()).getTime();
+                result["timestamp"] = endTime;
+                result["timeTaken"] = endTime - beginTime;
+                apiResponse.json(result);
+        
+                console.log("Scraping completed in " + (endTime - beginTime) + "ms");
+                onSuccess(result);
+            });
     
-            let endTime = (new Date()).getTime();
-            result["timestamp"] = endTime;
-            result["timeTaken"] = endTime - beginTime;
-            apiResponse.json(result);
-    
-            console.log("Scraping completed in " + (endTime - beginTime) + "ms");
-            onSuccess(result);
+            
     
           });
     
@@ -298,7 +312,7 @@ exports.logUsage = () => {
     });
 };
 
-exports.getHistory = (apiRequest, apiResponse, next) => {
+exports.getHistory = (apiRequest, apiResponse) => {
 
     let $user = apiRequest.body["user"];
     let $pass = apiRequest.body["pass"];
@@ -345,6 +359,5 @@ exports.getHistory = (apiRequest, apiResponse, next) => {
             console.log("Error : "+err);
             apiResponse.status(500).json(getErrorObj("Error "+err));
         }
-        next();
     });
 };

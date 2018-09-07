@@ -3,5 +3,5 @@ module.exports = {
     USAGE_URL : "http://myaccount.gazonindia.com/Masters/usagedetail.aspx",
     PORT : 8000,
     db : 'mongodb://localhost:27017/internet_app',
-    baseUrl : '/internet_usage',
+    baseUrl : '/internet_app',
 };
