@@ -239,7 +239,7 @@ let _getUsage = function(apiRequest, apiResponse, onSuccess, onError) {
               result[fieldsToExtract[field]] = $(field).text();
             }
 
-            let today = new Date(new Date().setHours(0,0,0,0));
+            let today = new Date(new Date().setHours(5,30,0,0));
             UsageHistory.find({
                 creationTime : {
                     $gte : today
