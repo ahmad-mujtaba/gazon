@@ -345,7 +345,11 @@ exports.getHistory = (apiRequest, apiResponse) => {
 
                 UsageHistory.find(historyCriteria).exec(function(err, history){
                     if(err === null) {
-                        apiResponse.status(200).json(history);
+                        let d = [];
+                        history.forEach(function(h){
+                            d.push({allotted:h["result"]["allotted"], remain:h["result"]["remain"], time:h["creationTime"]});
+                        });
+                        apiResponse.status(200).json(d);
                     } else {
                         console.log("Error : "+err);
                         apiResponse.status(500).json(getErrorObj("Error "+err));
